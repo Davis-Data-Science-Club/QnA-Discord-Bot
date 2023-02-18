@@ -15,7 +15,7 @@ sToken= nltk.sent_tokenize(ques)
 
 #question pools (only tried with 2 pools right now, will code it for all of them later
 pool1= ['where is your website located', 'where is your website', 'where is your website link']
-pool2=['where can i access the slides?', 'where can i access the slides from last meeting?', 'where are the slides?']
+pool2=['can i join even though i am not in stats/data sciene/cs major', 'how inclusive is your club']
 pools=[pool1, pool2]
 
 #formatting function
@@ -49,7 +49,7 @@ for i in pools:
 #displaying the answer based on the similarity scores
 question= pools[sim_list.index(max(sim_list))] #matching user question to appropriate pool
 #dictionary with answers as keys and question pools as values
-reply= {"Here's a link to the club's website: https://davisdsc.com/": pool1, "Slides are available in the Announcements Channel.": pool2}
+reply= {"Our website can be found here: https://davisdsc.com/": pool1, "We accept all majors.": pool2}
 keyl= list(reply.keys())
 vall= list(reply.values())
 answer= keyl[vall.index(question)]

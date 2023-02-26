@@ -3,6 +3,7 @@ import nltk
 import sklearn
 import numpy as np
 from nltk.corpus.reader.tagged import sent_tokenize
+from nltk.stem import WordNetLemmatizer   
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -29,10 +30,12 @@ pools=[pool1, pool2, pool3, pool4, pool5, pool6, pool7]
 
 #formatting
 def format_string(text):
-    text = ''.join([word for word in text if word not in string.punctuation])
+    text= ''.join([word for word in text])
     text = text.lower()
-    text = ' '.join([word for word in text.split() if word not in stopwords])
-    
+    text= nltk.word_tokenize(text)
+    text = ' '.join([WordNetLemmatizer().lemmatize(word) for word in text])
+    text = ''.join([word for word in text if word not in string.punctuation])
+    text = ' '.join([word for word in text.split() if word not in stopwords]) 
     return text
 
 #vectorizing and finding similarity of question with all pools
@@ -64,10 +67,12 @@ reply= {"Our website can be found here: https://davisdsc.com/": pool1, "We accep
         "Each quarter we offer workshops about data science topics, talks with industry veterans, project involvement, and much more.": pool7}
 keyl= list(reply.keys())
 vall= list(reply.values())
+
 #tried something for edge cases and accuracy
 if maxSim==0: #edge case: when question does not match any pool
   print("I'm sorry, I'm afraid I do not know!")
   question= None
+
 elif maxSim<0.8: #tried a threshold of 0.8 in case there's not a close match of the question
   probable_q= pools[sim_list.index(max(sim_list))]
   print(probable_q)
@@ -80,6 +85,7 @@ elif maxSim<0.8: #tried a threshold of 0.8 in case there's not a close match of 
   else:
       print("I'm sorry, I'm afraid I do not know!")
       question= None
+
 else: #for question that match pools closely
   question= pools[sim_list.index(max(sim_list))] #matching user question to appropriate pool
   print(question)

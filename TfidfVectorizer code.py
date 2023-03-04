@@ -3,10 +3,10 @@ import nltk
 import sklearn
 import numpy as np
 from nltk.corpus.reader.tagged import sent_tokenize
-from nltk.stem import WordNetLemmatizer   
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from nltk.stem import WordNetLemmatizer 
 from nltk.corpus import stopwords
 stopwords= stopwords.words('english')
 
@@ -18,17 +18,17 @@ ques= input()
 sToken= nltk.sent_tokenize(ques)
 
 #question pools (will program for data from csv file later)
-pool1= ['where is your website located. where is your website. where is your website link']
-pool2=['can i join even though i am not in stats/data sciene/cs major. how inclusive is your club']
+pool1= ['where is your website located where is your website. where is your website link']
+pool2=['can i join even though i am not in stats/data sciene/cs major how inclusive is your club']
 pool3= ['get to know the officer team. who are the officers and what do they do. who is in the officer team']
 pool4=['what has been accomplished so far. greatest accomplishment?']
 pool5= ['what do you do in the club? what happens in the club?']
-pool6=['club\’s goal? what is the purpose of this club? future goals?']
+pool6=['club’s goal? what is the purpose of this club? future goals?']
 pool7=['what type of events does your club offer? what events does your club have? any cool events?']
 pools=[pool1, pool2, pool3, pool4, pool5, pool6, pool7]
 
 #formatting
-def format_string(text):
+def format_string(text): 
     text= ''.join([word for word in text])
     text = text.lower()
     text= nltk.word_tokenize(text)
@@ -40,17 +40,19 @@ def format_string(text):
 #vectorizing and finding similarity of question with all pools
 tv= TfidfVectorizer()
 sim_list=[]
+
+#constants for the for-loop:
+format_ques=list(map(format_string, sToken))
+ques_vectorize= tv.fit_transform(format_ques)
+ques_vector= ques_vectorize.toarray()
+
 for i in pools:
     #formating user question and the question pools
-    format_ques=list(map(format_string, sToken))
     format_pool=list(map(format_string, i))
     
     #vectorizing user question and the question pools
-    pool_vectorizer= tv.fit_transform(format_pool)
+    pool_vectorizer= tv.transform(format_pool)
     pool_vectors= pool_vectorizer.toarray()
-
-    ques_vectorize= tv.transform(format_ques)
-    ques_vector= ques_vectorize.toarray()
 
     #cosine similarity
     similarity= sklearn.metrics.pairwise.cosine_similarity(ques_vector, pool_vectors)

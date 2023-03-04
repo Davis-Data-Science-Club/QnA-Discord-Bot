@@ -1,10 +1,8 @@
 #importing libraries
 import nltk
 import sklearn
-import numpy as np
 from nltk.corpus.reader.tagged import sent_tokenize
 import string
-from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem import WordNetLemmatizer 
 from nltk.corpus import stopwords
 stopwords= stopwords.words('english')

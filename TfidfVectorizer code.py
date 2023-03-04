@@ -87,6 +87,5 @@ elif maxSim<0.8: #tried a threshold of 0.8 in case there's not a close match of 
 
 else: #for question that match pools closely
   question= pools[sim_list.index(max(sim_list))] #matching user question to appropriate pool
-  print(question)
   answer= keyl[vall.index(question)]
   print(answer)

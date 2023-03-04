@@ -6,7 +6,6 @@ from nltk.corpus.reader.tagged import sent_tokenize
 from nltk.stem import WordNetLemmatizer   
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
 stopwords= stopwords.words('english')

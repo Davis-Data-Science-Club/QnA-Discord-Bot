@@ -1,0 +1,85 @@
+import nltk
+import numpy as np
+from nltk.corpus.reader.tagged import sent_tokenize
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+
+# set up stopwords and lemmatizer
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+
+# question pools
+pools = [
+    ['where is your website located', 'where is your website', 'where is your website link'],
+    ['can i join even though i am not in stats/data sciene/cs major', 'how inclusive is your club'],
+    ['get to know the officer team', 'who are the officers and what do they do', 'who is in the officer team'],
+    ['what has been accomplished so far', 'greatest accomplishment'],
+    ['what do you do in the club', 'what happens in the club'],
+    ['club\’s goal', 'what is the purpose of this club', 'future goals'],
+    ['what type of events does your club offer', 'what events does your club have', 'any cool events']
+]
+
+# combined sentence variations for each pool
+combined_pools = [' '.join(pool) for pool in pools]
+
+# extract unique words for each pool
+unique_words = list(set([lemmatizer.lemmatize(word.lower()) for pool in combined_pools for word in nltk.word_tokenize(pool) if word.lower() not in stop_words]))
+
+# create a count vectorizer
+vectorizer = CountVectorizer(vocabulary=unique_words)
+
+# user input question, tokenized
+ques = input('Hello! How can I help you today?\n')
+sToken = sent_tokenize(ques)
+
+# formating user question and the question pools
+format_ques = [lemmatizer.lemmatize(word.lower()) for word in nltk.word_tokenize(sToken[0]) if word.lower() not in stop_words]
+format_pools = [[lemmatizer.lemmatize(word.lower()) for word in nltk.word_tokenize(pool) if word.lower() not in stop_words] for pool in combined_pools]
+
+# vectorizing user question and the question pools
+pool_vectors = vectorizer.fit_transform([' '.join(pool) for pool in format_pools]).toarray()
+ques_vector = vectorizer.transform([' '.join(format_ques)]).toarray()
+
+# cosine similarity
+similarity = cosine_similarity(ques_vector, pool_vectors)[0]
+max_sim = np.max(similarity)
+
+# answer based on the similarity scores
+if max_sim < 0.3: # not a close match
+    print("I'm sorry, I'm afraid I do not know!")
+else:
+    if max_sim < 0.8:
+        probable_q = pools[np.argmax(similarity)]
+        print(probable_q)
+        print("Was this your question?")
+        confirmation = input("Type yes or no:")
+        if confirmation=="no":
+            print("I'm sorry, I'm afraid I do not know!")
+            question = None
+        elif confirmation == "yes":
+            question_index = np.argmax(similarity)
+            answer = {
+                0: 'Our website can be found here: https://davisdsc.com/',
+                1: 'We accept all majors.',
+                2: 'Our current officer team can be found in this part of our website: https://davisdsc.com/about',
+                3: 'All our accomplishments can be found in our GitHub page: https://github.com/Davis-Data-Science-Club',
+                4: 'Each quarter we offer workshops about data science topics, talks with industry veterans, project involvement, and much more.',
+                5: 'We are on a mission to foster a supportive community centered around developing technical skill sets, career building through industry guest speakers, and enhancing student body engagement.',
+                6: 'Each quarter we offer workshops about data science topics, talks with industry veterans, project'
+            }
+            print(answer[question_index])
+    else:
+        question_index = np.argmax(similarity)
+        answer = {
+            0: 'Our website can be found here: https://davisdsc.com/',
+            1: 'We accept all majors.',
+            2: 'Our current officer team can be found in this part of our website: https://davisdsc.com/about',
+            3: 'All our accomplishments can be found in our GitHub page: https://github.com/Davis-Data-Science-Club',
+            4: 'Each quarter we offer workshops about data science topics, talks with industry veterans, project involvement, and much more.',
+            5: 'We are on a mission to foster a supportive community centered around developing technical skill sets, career building through industry guest speakers, and enhancing student body engagement.',
+            6: 'Each quarter we offer workshops about data science topics, talks with industry veterans, project'
+        }
+        print(answer[question_index])
